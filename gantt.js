@@ -22,7 +22,7 @@ d3.gantt = function() {
   var taskTypes = [];
   var taskStatus = [];
   var taskRoundiness = {
-    HEADER: 15,
+    HEADER: 2,
     TASK  : 5,
   };
 
@@ -96,20 +96,31 @@ d3.gantt = function() {
       .attr("height", () => y.bandwidth())
       .attr("width", (d) => x(d.endDate) - x(d.startDate))
 
-    svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
-    .transition()
-      .call(xAxis);
-
-    svg.append("g").attr("class", "y axis").transition().call(yAxis);
+    resetAndCreateAxes();
 
     return gantt;
 
   };
 
+  function resetAndCreateAxes() {
+    var svg = d3.select("svg g.gantt-chart");
+
+    svg.select("g.x_axis").remove();
+    svg.select("g.y_axis").remove();
+
+    svg.append("g")
+      .attr("class", "x_axis")
+      .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
+      .call(xAxis);
+
+    svg.append("g")
+      .attr("class", "y_axis")
+      .call(yAxis);
+  }
+
   gantt.redraw = function(tasks) {
 
+    console.dir(taskTypes);
     initTimeDomain(tasks);
     initAxis();
 
@@ -118,27 +129,21 @@ d3.gantt = function() {
     var ganttChartGroup = svg.select(".gantt-chart");
     var rect = ganttChartGroup.selectAll("rect").data(tasks, keyFunction);
 
+    // See D3's "General Update Pattern"
+    rect.exit().remove();
+
     rect.enter()
-      .insert("rect",":first-child")
+      .append("rect")
+      .attr("y", 0)
+    .merge(rect)
       .attr("rx", (d) => (taskRoundiness[d.status] || 5))
       .attr("ry", (d) => (taskRoundiness[d.status] || 5))
       .attr("class", (d) => (taskStatus[d.status] || "bar"))
-    .transition()
-      .attr("y", 0)
       .attr("transform", rectTransform)
-      .attr("height", () => y.range()[1])
+      .attr("height", () => y.bandwidth())
       .attr("width", (d) => x(d.endDate) - x(d.startDate));
 
-    rect.transition()
-      .attr("transform", rectTransform)
-      .attr("height", () => y.range()[1])
-      .attr("width", (d) => x(d.endDate) - x(d.startDate));
-
-    rect.exit()
-      .remove();
-
-    svg.select(".x").transition().call(xAxis);
-    svg.select(".y").transition().call(yAxis);
+    resetAndCreateAxes();
 
     return gantt;
   };
