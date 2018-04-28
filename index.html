@@ -53,7 +53,8 @@ div#content {
     <div id="content">
         <div id="input_wrapper">
             <textarea cols="50" rows="50" id="task_input">
-                Enter your tasks.
+RMF Step 5 from 2018-04-02 to 2018-04-12
+A Job from 2018-05-01 to 2018-05-30
             </textarea>
             <button id="btn_load_tasks">Load Tasks into Chart</button>
         </div>
@@ -65,47 +66,68 @@ div#content {
     <script src="gantt.js"></script>
 
     <script>
-const tasks = [
-    {
-        "startDate" : new Date(2018, 3, 1),
-        "endDate"   : new Date(2018, 3, 15),
-        "taskName"  : "RMF Step 5",
-        "status"    : "RUNNING"
-    },
-    {
-        "startDate" : new Date(2018, 4, 1),
-        "endDate"   : new Date(2018, 5, 15),
-        "taskName"  : "A Job",
-        "status"    : "RUNNING"
-    }
-];
-
-// Maps task statuses to CSS class names
-const taskStatus = {
-    "SUCCEEDED" : "bar",
-    "FAILED" : "bar-failed",
-    "RUNNING" : "bar-running",
-    "KILLED" : "bar-killed"
-};
-
-const taskNames = [ "D Job", "P Job", "RMF Step 5", "A Job", "N Job" ];
-
-const maxDate = d3.max(tasks, (d) => d.endDate);
-const minDate = d3.min(tasks, (d) => d.startDate);
-
-const format = "%x";
-
-let gantt = d3.gantt()
-    .taskTypes(taskNames)
-    .taskStatus(taskStatus)
-    .tickFormat(format);
-
-gantt(tasks);
 
 let btnLoadTasks = document.getElementById('btn_load_tasks');
+
 btnLoadTasks.addEventListener('click', (ev) => {
-    console.log("Loading gantt chart!");
+    let inputArea = document.getElementById('task_input');
+    const taskInput = inputArea.value;
+
+    console.log("Loading gantt chart with " + taskInput);
+
+    const tasks = parseTasks(taskInput);
+    setupGanttChart(tasks);
 });
 
+function taskFromInputLine(line) {
+    const line_re = /^\s*([a-zA-Z0-9_ ]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])\s*$/;
+    let result = line_re.exec(line);
+    if (!result) { return null; }
+
+    return {
+        startDate: new Date(result[2]),
+        endDate  : new Date(result[3]),
+        taskName : result[1],
+        status   : "RUNNING"
+    };
+}
+
+function parseTasks(taskInput) {
+    let tasks = [];
+
+    const lines = taskInput.trim().split(/\n+/);
+    for (const line of lines) {
+        const task = taskFromInputLine(line.trim());
+        if (task) {
+            tasks.push(task);
+        } else {
+            throw "Invalid task " + line + "!";
+        }
+    }
+
+    return tasks;
+}
+
+function setupGanttChart(tasks) {
+    // Maps task statuses to CSS class names
+    const taskStatus = {
+        "SUCCEEDED" : "bar",
+        "FAILED" : "bar-failed",
+        "RUNNING" : "bar-running",
+        "KILLED" : "bar-killed"
+    };
+
+    const taskNames = [ ...(new Set(tasks.map((x) => x.taskName))) ];
+    const format = "%x";
+
+    // TODO: Figure out how to clear existing gantt if one is present
+
+    let gantt = d3.gantt()
+        .taskTypes(taskNames)
+        .taskStatus(taskStatus)
+        .tickFormat("%x");
+
+    gantt(tasks);
+}
     </script>
 </body></html>
