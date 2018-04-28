@@ -11,22 +11,20 @@
  */
 
 d3.gantt = function() {
-  var FIT_TIME_DOMAIN_MODE = "fit";
-  var FIXED_TIME_DOMAIN_MODE = "fixed";
-
   var margin = {
-    top : 60,
-    right : 40,
+    top : 0,
+    right : 30,
     bottom : 50,
-    left : 150
+    left : 30
   };
-  var timeDomainStart = d3.timeDay.offset(new Date(),-3);
-  var timeDomainEnd = d3.timeHour.offset(new Date(),+3);
-  var timeDomainMode = FIT_TIME_DOMAIN_MODE;// fixed or fit
+  var timeDomainStart;
+  var timeDomainEnd;
   var taskTypes = [];
   var taskStatus = [];
-  var height = document.body.clientHeight - margin.top - margin.bottom-5;
-  var width = document.body.clientWidth - margin.right - margin.left-5;
+
+  var ganttNode = document.getElementById('gantt_wrapper');
+  var height = ganttNode.offsetHeight;
+  var width  = ganttNode.offsetWidth;
 
   var tickFormat = "%H:%M";
 
@@ -43,32 +41,28 @@ d3.gantt = function() {
   initAxis();
 
   var initTimeDomain = function(tasks) {
-    if (timeDomainMode === FIT_TIME_DOMAIN_MODE) {
-      if (tasks === undefined || tasks.length < 1) {
-        timeDomainStart = d3.time.day.offset(new Date(), -3);
-        timeDomainEnd = d3.time.hour.offset(new Date(), +3);
-        return;
-      }
-      tasks.sort(function(a, b) {
-        return a.endDate - b.endDate;
-      });
-      timeDomainEnd = tasks[tasks.length - 1].endDate;
-      tasks.sort(function(a, b) {
-        return a.startDate - b.startDate;
-      });
-      timeDomainStart = tasks[0].startDate;
-    }
+    timeDomainStart = d3.min(tasks, (task) => task.startDate);
+    timeDomainEnd   = d3.max(tasks, (task) => task.endDate);
   };
 
  function initAxis() {
-    x = d3.scaleTime().domain([ timeDomainStart, timeDomainEnd ]).range([ 0, width ]).clamp(true);
+    x = d3.scaleTime()
+      .domain([ timeDomainStart, d3.timeMonth.offset(timeDomainStart, 3) ])
+      .nice(d3.timeWeek, 1)
+      .range([ 0, width ]).clamp(true);
 
-    y = d3.scaleBand().domain(taskTypes).rangeRound([ 0, height - margin.top - margin.bottom ], .1);
+    y = d3.scaleBand()
+      .domain(taskTypes)
+      .range([ 0, height - margin.top - margin.bottom ])
+      .padding(0.5)
+      .align(0.5);
 
-    xAxis = d3.axisBottom().scale(x).tickFormat(d3.timeFormat(tickFormat))
+    xAxis = d3.axisBottom().scale(x)
+      .tickFormat(d3.timeFormat(tickFormat))
       .tickSize(8).tickPadding(8);
 
-    yAxis = d3.axisLeft().scale(y).tickSize(0);
+    yAxis = d3.axisLeft().scale(y)
+      .tickSize(0);
   };
 
   function gantt(tasks) {
@@ -92,15 +86,15 @@ d3.gantt = function() {
       .append("rect")
       .attr("rx", 5)
       .attr("ry", 5)
-      .attr("class", function(d){ 
+      .attr("class", function(d){
         if(taskStatus[d.status] == null){ return "bar";}
         return taskStatus[d.status];
-      }) 
+      })
       .attr("y", 0)
       .attr("transform", rectTransform)
-      .attr("height", function(d) { return 70; })
-      .attr("width", function(d) { 
-        return (x(d.endDate) - x(d.startDate)); 
+      .attr("height", function(d) { return y.bandwidth(); })
+      .attr("width", function(d) {
+        return (x(d.endDate) - x(d.startDate));
       });
 
       svg.append("g")
@@ -129,23 +123,23 @@ d3.gantt = function() {
       .insert("rect",":first-child")
       .attr("rx", 5)
       .attr("ry", 5)
-      .attr("class", function(d){ 
+      .attr("class", function(d){
         if(taskStatus[d.status] == null){ return "bar";}
         return taskStatus[d.status];
-      }) 
+      })
       .transition()
       .attr("y", 0)
       .attr("transform", rectTransform)
       .attr("height", function(d) { return y.range()[1]; })
-      .attr("width", function(d) { 
-        return (x(d.endDate) - x(d.startDate)); 
+      .attr("width", function(d) {
+        return (x(d.endDate) - x(d.startDate));
       });
 
       rect.transition()
         .attr("transform", rectTransform)
         .attr("height", function(d) { return y.range()[1]; })
-        .attr("width", function(d) { 
-          return (x(d.endDate) - x(d.startDate)); 
+        .attr("width", function(d) {
+          return (x(d.endDate) - x(d.startDate));
         });
 
         rect.exit().remove();
