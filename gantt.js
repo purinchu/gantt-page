@@ -15,9 +15,9 @@ d3.gantt = function() {
   var FIXED_TIME_DOMAIN_MODE = "fixed";
 
   var margin = {
-    top : 20,
+    top : 60,
     right : 40,
-    bottom : 20,
+    bottom : 50,
     left : 150
   };
   var timeDomainStart = d3.timeDay.offset(new Date(),-3);
@@ -76,7 +76,7 @@ d3.gantt = function() {
     initTimeDomain();
     initAxis();
 
-    var svg = d3.select("body")
+    var svg = d3.select("div#gantt_wrapper")
       .append("svg")
       .attr("class", "chart")
       .attr("width", width + margin.left + margin.right)
