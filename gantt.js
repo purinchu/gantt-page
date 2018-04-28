@@ -86,16 +86,11 @@ d3.gantt = function() {
       .append("rect")
       .attr("rx", 5)
       .attr("ry", 5)
-      .attr("class", function(d){
-        if(taskStatus[d.status] == null){ return "bar";}
-        return taskStatus[d.status];
-      })
+      .attr("class", (d) => (taskStatus[d.status] || "bar"))
       .attr("y", 0)
       .attr("transform", rectTransform)
-      .attr("height", function(d) { return y.bandwidth(); })
-      .attr("width", function(d) {
-        return (x(d.endDate) - x(d.startDate));
-      });
+      .attr("height", () => y.bandwidth())
+      .attr("width", (d) => x(d.endDate) - x(d.startDate))
 
       svg.append("g")
         .attr("class", "x axis")
@@ -123,31 +118,25 @@ d3.gantt = function() {
       .insert("rect",":first-child")
       .attr("rx", 5)
       .attr("ry", 5)
-      .attr("class", function(d){
-        if(taskStatus[d.status] == null){ return "bar";}
-        return taskStatus[d.status];
-      })
-      .transition()
+      .attr("class", (d) => (taskStatus[d.status] || "bar"))
+    .transition()
       .attr("y", 0)
       .attr("transform", rectTransform)
-      .attr("height", function(d) { return y.range()[1]; })
-      .attr("width", function(d) {
-        return (x(d.endDate) - x(d.startDate));
-      });
+      .attr("height", () => y.range()[1])
+      .attr("width", (d) => x(d.endDate) - x(d.startDate));
 
-      rect.transition()
-        .attr("transform", rectTransform)
-        .attr("height", function(d) { return y.range()[1]; })
-        .attr("width", function(d) {
-          return (x(d.endDate) - x(d.startDate));
-        });
+    rect.transition()
+      .attr("transform", rectTransform)
+      .attr("height", () => y.range()[1])
+      .attr("width", (d) => x(d.endDate) - x(d.startDate));
 
-        rect.exit().remove();
+    rect.exit()
+      .remove();
 
-        svg.select(".x").transition().call(xAxis);
-        svg.select(".y").transition().call(yAxis);
+    svg.select(".x").transition().call(xAxis);
+    svg.select(".y").transition().call(yAxis);
 
-        return gantt;
+    return gantt;
   };
 
   gantt.margin = function(value) {
