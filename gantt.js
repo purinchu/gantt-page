@@ -21,6 +21,10 @@ d3.gantt = function() {
   var timeDomainEnd;
   var taskTypes = [];
   var taskStatus = [];
+  var taskRoundiness = {
+    HEADER: 15,
+    TASK  : 5,
+  };
 
   var ganttNode = document.getElementById('gantt_wrapper');
   var height = ganttNode.offsetHeight;
@@ -84,23 +88,23 @@ d3.gantt = function() {
     svg.selectAll(".chart")
       .data(tasks, keyFunction).enter()
       .append("rect")
-      .attr("rx", 5)
-      .attr("ry", 5)
+      .attr("rx", (d) => (taskRoundiness[d.status] || 5))
+      .attr("ry", (d) => (taskRoundiness[d.status] || 5))
       .attr("class", (d) => (taskStatus[d.status] || "bar"))
       .attr("y", 0)
       .attr("transform", rectTransform)
       .attr("height", () => y.bandwidth())
       .attr("width", (d) => x(d.endDate) - x(d.startDate))
 
-      svg.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
-        .transition()
-        .call(xAxis);
+    svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0, " + (height - margin.top - margin.bottom) + ")")
+    .transition()
+      .call(xAxis);
 
-      svg.append("g").attr("class", "y axis").transition().call(yAxis);
+    svg.append("g").attr("class", "y axis").transition().call(yAxis);
 
-      return gantt;
+    return gantt;
 
   };
 
@@ -116,8 +120,8 @@ d3.gantt = function() {
 
     rect.enter()
       .insert("rect",":first-child")
-      .attr("rx", 5)
-      .attr("ry", 5)
+      .attr("rx", (d) => (taskRoundiness[d.status] || 5))
+      .attr("ry", (d) => (taskRoundiness[d.status] || 5))
       .attr("class", (d) => (taskStatus[d.status] || "bar"))
     .transition()
       .attr("y", 0)

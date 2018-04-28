@@ -53,6 +53,7 @@ div#content {
     <div id="content">
         <div id="input_wrapper">
             <textarea cols="50" rows="50" id="task_input">
+-- Major Group 1 --
 RMF Step 5 from 2018-04-02 to 2018-04-12
 A Job from 2018-05-01 to 2018-05-30
             </textarea>
@@ -81,24 +82,56 @@ btnLoadTasks.addEventListener('click', (ev) => {
 
 function taskFromInputLine(line) {
     const line_re = /^\s*([a-zA-Z0-9_ ]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])\s*$/;
-    let result = line_re.exec(line);
-    if (!result) { return null; }
 
-    return {
-        startDate: new Date(result[2]),
-        endDate  : new Date(result[3]),
-        taskName : result[1],
-        status   : "RUNNING"
-    };
+    let result = line_re.exec(line);
+    if (result) {
+        return {
+            startDate: new Date(result[2]),
+            endDate  : new Date(result[3]),
+            taskName : result[1],
+            status   : "TASK"
+        };
+    }
+
+    // Look for header line
+    result = /^\s*--+\s*(.*)\s*--+\s*$/.exec(line);
+    if (result) {
+        return {
+            startDate: new Date(2037, 12, 31),
+            endDate  : new Date(1970, 0, 1),
+            taskName : result[1].trim(),
+            status   : "HEADER"
+        }
+    }
+
+    return null;
 }
 
 function parseTasks(taskInput) {
     let tasks = [];
+    var curHeader;
 
     const lines = taskInput.trim().split(/\n+/);
     for (const line of lines) {
         const task = taskFromInputLine(line.trim());
+
         if (task) {
+            if (task.status === "HEADER") {
+                // New header
+                curHeader = task;
+            }
+            else if (curHeader) {
+                tasks.header = curHeader;
+                curHeader.startDate =
+                    (task.startDate.getTime() < curHeader.startDate.getTime())
+                        ? task.startDate
+                        : curHeader.startDate;
+                curHeader.endDate =
+                    (task.endDate.getTime() > curHeader.endDate.getTime())
+                        ? task.endDate
+                        : curHeader.endDate;
+            }
+
             tasks.push(task);
         } else {
             throw "Invalid task " + line + "!";
@@ -113,14 +146,13 @@ let gantt;
 function setupGanttChart(tasks) {
     // Maps task statuses to CSS class names
     const taskStatus = {
-        "SUCCEEDED" : "bar",
+        "HEADER" : "bar",
         "FAILED" : "bar-failed",
-        "RUNNING" : "bar-running",
+        "TASK" : "bar-running",
         "KILLED" : "bar-killed"
     };
 
     const taskNames = [ ...(new Set(tasks.map((x) => x.taskName))) ];
-    const format = "%x";
 
     if (!gantt) {
         gantt = d3.gantt()
@@ -130,7 +162,8 @@ function setupGanttChart(tasks) {
         gantt(tasks);
     }
     else {
-        gantt.redraw(tasks);
+        gantt.taskTypes(taskNames)
+            .redraw(tasks);
     }
 }
     </script>
