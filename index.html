@@ -70,14 +70,10 @@ const taskStatus = {
 
 const taskNames = [ "D Job", "P Job", "RMF Step 5", "A Job", "N Job" ];
 
-// TODO: Why not just use d3.min, d3.max here ???
-tasks.sort((a, b) => a.endDate - b.endDate);
-const maxDate = tasks[tasks.length - 1].endDate;
+const maxDate = d3.max(tasks, (d) => d.endDate);
+const minDate = d3.min(tasks, (d) => d.startDate);
 
-tasks.sort((a, b) => a.startDate - b.startDate);
-const minDate = tasks[0].startDate;
-
-const format = "%H:%M";
+const format = "%x";
 
 let gantt = d3.gantt()
     .taskTypes(taskNames)
