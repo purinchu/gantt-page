@@ -108,6 +108,8 @@ function parseTasks(taskInput) {
     return tasks;
 }
 
+let gantt;
+
 function setupGanttChart(tasks) {
     // Maps task statuses to CSS class names
     const taskStatus = {
@@ -120,14 +122,16 @@ function setupGanttChart(tasks) {
     const taskNames = [ ...(new Set(tasks.map((x) => x.taskName))) ];
     const format = "%x";
 
-    // TODO: Figure out how to clear existing gantt if one is present
-
-    let gantt = d3.gantt()
-        .taskTypes(taskNames)
-        .taskStatus(taskStatus)
-        .tickFormat("%b (%V)");
-
-    gantt(tasks);
+    if (!gantt) {
+        gantt = d3.gantt()
+            .taskTypes(taskNames)
+            .taskStatus(taskStatus)
+            .tickFormat("%b (%V)");
+        gantt(tasks);
+    }
+    else {
+        gantt.redraw(tasks);
+    }
 }
     </script>
 </body></html>
