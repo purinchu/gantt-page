@@ -42,7 +42,7 @@ d3.gantt = function() {
 
   initAxis();
 
-  var initTimeDomain = function() {
+  var initTimeDomain = function(tasks) {
     if (timeDomainMode === FIT_TIME_DOMAIN_MODE) {
       if (tasks === undefined || tasks.length < 1) {
         timeDomainStart = d3.time.day.offset(new Date(), -3);
@@ -73,7 +73,7 @@ d3.gantt = function() {
 
   function gantt(tasks) {
 
-    initTimeDomain();
+    initTimeDomain(tasks);
     initAxis();
 
     var svg = d3.select("div#gantt_wrapper")
@@ -117,7 +117,7 @@ d3.gantt = function() {
 
   gantt.redraw = function(tasks) {
 
-    initTimeDomain();
+    initTimeDomain(tasks);
     initAxis();
 
     var svg = d3.select("svg");
