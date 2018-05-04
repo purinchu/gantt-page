@@ -81,26 +81,41 @@ btnLoadTasks.addEventListener('click', (ev) => {
 });
 
 function taskFromInputLine(line) {
-    const line_re = /^\s*([a-zA-Z0-9_ ]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])\s*$/;
+    // line must be .trim() already for regex to work right
+
+    const line_re = /([a-zA-Z0-9_ ]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])$/;
 
     let result = line_re.exec(line);
     if (result) {
         return {
             startDate: new Date(result[2]),
             endDate  : new Date(result[3]),
-            taskName : result[1],
+            taskName : result[1].trim(),
+            deps     : [ ],
             status   : "TASK"
         };
     }
 
     // Look for header line
-    result = /^\s*--+\s*(.*)\s*--+\s*$/.exec(line);
+    result = /^--+\s*(.*)\s*--+$/.exec(line);
     if (result) {
         return {
             startDate: new Date(2037, 12, 31),
             endDate  : new Date(1970, 0, 1),
             taskName : result[1].trim(),
+            deps     : [ ],
             status   : "HEADER"
+        }
+    }
+
+    // Look for dependency declaration
+    result = /^([a-zA-Z0-9_ ]+)\s*(?:[Dd]epends on|[Nn]eeds)\s([a-zA-Z0-9_ ]+)$/.exec(line);
+    if (result) {
+        console.log(`Adding ${result[2]} as a dependency of ${result[1]}`);
+        return {
+            requiringTaskName: result[1].trim(),
+            requiredTaskName:  result[2].trim(),
+            status   : "DEPS"
         }
     }
 
@@ -109,6 +124,7 @@ function taskFromInputLine(line) {
 
 function parseTasks(taskInput) {
     let tasks = [];
+    let taskNames = new Map();  // Maps task name to task
     var curHeader;
 
     const lines = taskInput.trim().split(/\n+/);
@@ -119,6 +135,20 @@ function parseTasks(taskInput) {
             if (task.status === "HEADER") {
                 // New header
                 curHeader = task;
+            }
+            else if (task.status === "DEPS") {
+                const requiredTask = taskNames.get(task.requiredTaskName);
+                const requiringTask = taskNames.get(task.requiringTaskName);
+
+                if (requiredTask && requiringTask) {
+                    requiringTask.deps.push(requiredTask);
+                    console.dir(requiringTask);
+                }
+                else {
+                    throw "Can't find both of " + task.requiringTaskName + " and " + task.requiredTaskName;
+                }
+
+                continue;
             }
             else if (curHeader) {
                 tasks.header = curHeader;
@@ -132,6 +162,7 @@ function parseTasks(taskInput) {
                         : curHeader.endDate;
             }
 
+            taskNames.set(task.taskName, task);
             tasks.push(task);
         } else {
             throw "Invalid task " + line + "!";
