@@ -53,9 +53,17 @@ div#content {
     <div id="content">
         <div id="input_wrapper">
             <textarea cols="50" rows="50" id="task_input">
+# Use this "#" character to start a comment that the program ignores
+
+# Opens up a new group of tasks
 -- Major Group 1 --
+
+# Tasks follow: "name" from "start date" to "end date"
 RMF Step 5 from 2018-04-02 to 2018-04-12
 A Job from 2018-05-01 to 2018-05-30
+
+# Add dependencies here: "later task" depends on "earlier task"
+A Job depends on RMF Step 5
             </textarea>
             <button id="btn_load_tasks">Load Tasks into Chart</button>
         </div>
@@ -127,7 +135,11 @@ function parseTasks(taskInput) {
     let taskNames = new Map();  // Maps task name to task
     var curHeader;
 
-    const lines = taskInput.trim().split(/\n+/);
+    const lines = taskInput.trim()
+        .split(/\n+/)
+        .map(str => str.replace(/#.*$/, '').trim())
+        .filter(str => str.length > 0);
+
     for (const line of lines) {
         const task = taskFromInputLine(line.trim());
 
