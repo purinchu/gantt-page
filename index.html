@@ -89,8 +89,9 @@ btnLoadTasks.addEventListener('click', (ev) => {
 });
 
 function taskFromInputLine(line) {
-    // line must be .trim() already for regex to work right
+    // line must be .trim()'d already for regex to work right
 
+    // Look for dependency (syntax 1)
     const line_re = /([a-zA-Z0-9_ ]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])$/;
 
     let result = line_re.exec(line);
@@ -102,6 +103,20 @@ function taskFromInputLine(line) {
             deps     : [ ],
             status   : "TASK"
         };
+    }
+
+    // Look for dependency with duration (syntax 2)
+    const task_dep_re = /([a-zA-Z0-9_ ]+) [tT]akes ([0-9]+) days?$/;
+    result = task_dep_re.exec(line);
+    if (result) {
+        return {
+            startDate: null,
+            endDate  : null,
+            duration : +(result[2].trim()),
+            taskName : result[1].trim(),
+            deps     : [ ],
+            status   : "TASK"
+        }
     }
 
     // Look for header line
