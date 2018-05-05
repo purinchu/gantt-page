@@ -35,14 +35,6 @@ function parseTasks(taskInput) {
             }
             else if (curHeader) {
                 task.header = curHeader;
-                curHeader.startDate =
-                    (task.startDate.getTime() < curHeader.startDate.getTime())
-                        ? task.startDate
-                        : curHeader.startDate;
-                curHeader.endDate =
-                    (task.endDate.getTime() > curHeader.endDate.getTime())
-                        ? task.endDate
-                        : curHeader.endDate;
             }
 
             tasks.push(task);
@@ -111,9 +103,12 @@ function parseTasks(taskInput) {
     }
 }
 
+// Given an array of tasks and an array of dependency edges with the *names* of
+// the right tasks, returns an array of dependency edges with the *task
+// objects* themselves, and also encodes the dependencies into the task objects
+// themselves (in the task.deps array)
 function resolveDeps(tasks, deps) {
     let taskNames = new Map();  // Maps task name to task
-
     tasks.forEach(t => taskNames.set(t.taskName, t));
 
     if (!deps.every(dep => taskNames.has(dep.requiredTaskName) && taskNames.has(dep.requiringTaskName)))
@@ -136,3 +131,57 @@ function resolveDeps(tasks, deps) {
     });
 }
 
+// Assuming tasks are already in required dependency order, calculates the
+// amount of time that is required for dependent tasks due to their
+// dependencies not being met, and pushes back their start times appropriately.
+// As a side effect, also ensures tasks have a defined end date (based on adjusted start
+// date and imbedded duration).
+// Returns the given list of tasks
+function relaxTaskConflicts(tasks) {
+    for(let task of tasks) {
+        if (task.status === "HEADER") {
+            // Skip for now and recalculate once all dates fixed
+            continue;
+        }
+
+        if (!task.startDate) {
+            task.startDate = new Date();
+        }
+
+        for(const dep of task.deps) {
+            if (dep.endDate > task.startDate) {
+                const duration = task.duration || Math.ceil(
+                    (task.endDate.getTime() - task.startDate.getTime()) /
+                    (1000 * 60 * 60 * 24));
+                task.originalStartDate = task.originalStartDate || task.startDate;
+                task.startDate = new Date(dep.endDate.getTime());
+                task.startDate.setDate(task.startDate.getDate() + 1); // Add a day
+
+                // Move end date to maintain same overall duration
+                task.endDate = new Date(task.startDate.getTime());
+                task.endDate.setDate(task.endDate.getDate() + duration);
+            }
+        }
+
+        if (!task.endDate) {
+            if (!task.duration) {
+                throw new Error(`Task ${task.taskName} has no end!`);
+            }
+
+            task.endDate = new Date(task.startDate.getTime());
+            task.endDate.setDate(task.startDate.getDate() + task.duration);
+        }
+    };
+
+    // Fix header dates
+    tasks.filter(task => task.status === "HEADER").forEach(header => {
+        const taskGroup = tasks.filter(task => task.header === header);
+        const minDate = d3.min(taskGroup, taskInGroup => taskInGroup.startDate);
+        const maxDate = d3.max(taskGroup, taskInGroup => taskInGroup.endDate);
+
+        header.startDate = minDate;
+        header.endDate   = maxDate;
+    });
+
+    return tasks;
+}

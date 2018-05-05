@@ -99,7 +99,8 @@ btnLoadTasks.addEventListener('click', (ev) => {
         const [tasks, depNames] = parseTasks(taskInput);
         const deps = resolveDeps(tasks, depNames);
 
-        const orderedTasks = toposort(tasks, deps).reverse();
+        const orderedTasks = relaxTaskConflicts(
+            toposort(tasks, deps).reverse());
         console.log("Dependency resolution done, ordered deps:");
         console.dir(orderedTasks);
         setupGanttChart(orderedTasks);
