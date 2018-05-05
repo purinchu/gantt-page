@@ -21,3 +21,9 @@ SOFTWARE.
 ---
 
 gantt.js is based on 2012 code from Dimitry Kudrayvtsev, under the same MIT license.
+
+---
+
+toposort.js is slightly modified from index.js at https://github.com/marcelklehr/toposort
+    (as of v2.0.2, git commit 3e3d72d1b48196ab0e87348d142ef23788a5bb67)
+and is copyright 2012 - 2018 Marcel Klehr <mklehr@gmx.net>, under the same MIT license.
