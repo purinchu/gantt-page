@@ -192,7 +192,7 @@ function parseTasks(taskInput) {
                 continue;
             }
             else if (curHeader) {
-                tasks.header = curHeader;
+                task.header = curHeader;
                 curHeader.startDate =
                     (task.startDate.getTime() < curHeader.startDate.getTime())
                         ? task.startDate
