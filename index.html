@@ -16,6 +16,12 @@ div#content {
 
 }
 
+div#errorOutput {
+    font-family: monospace;
+    color: red;
+    background: white;
+}
+
 .chart {
     font-size: 12px;
 }
@@ -50,6 +56,7 @@ div#content {
 <body>
     <h3>Gantt Viewer</h3>
 
+    <div id="errorOutput"></div>
     <div id="content">
         <div id="input_wrapper">
             <textarea cols="50" rows="50" id="task_input">
@@ -83,9 +90,16 @@ btnLoadTasks.addEventListener('click', (ev) => {
     const taskInput = inputArea.value;
 
     console.log("Loading gantt chart with " + taskInput);
+    let errorOut = document.getElementById('errorOutput');
+    errorOut.textContent = '';
 
-    const tasks = parseTasks(taskInput);
-    setupGanttChart(tasks);
+    try {
+        const tasks = parseTasks(taskInput);
+        setupGanttChart(tasks);
+    }
+    catch (e) {
+        errorOut.textContent = e.toString();
+    }
 });
 
 function taskFromInputLine(line) {
