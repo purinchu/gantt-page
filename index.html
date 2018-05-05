@@ -94,10 +94,13 @@ btnLoadTasks.addEventListener('click', (ev) => {
     errorOut.textContent = '';
 
     try {
-        const tasks = parseTasks(taskInput);
+        const [tasks, depNames] = parseTasks(taskInput);
+        const deps = resolveDeps(tasks, depNames);
+
         setupGanttChart(tasks);
     }
     catch (e) {
+        console.dir(e);
         errorOut.textContent = e.toString();
     }
 });
@@ -159,9 +162,31 @@ function taskFromInputLine(line) {
     return null;
 }
 
+function resolveDeps(tasks, deps) {
+    let taskNames = new Map();  // Maps task name to task
+
+    tasks.forEach(t => taskNames.set(t.taskName, t));
+
+    if (!deps.every(dep => taskNames.has(dep.requiredTaskName) && taskNames.has(dep.requiringTaskName)))
+    {
+        let missingTasks = deps
+            .filter(dep => !taskNames.has(dep.requiredTaskName) || !taskNames.has(dep.requiringTaskName))
+            .map(brokenDep => [brokenDep.requiringTaskName, brokenDep.requiredTaskName])
+            .reduce((acc, task) => acc.concat(task), []);
+        throw new Error("Missing tasks " + missingTasks.join(', '));
+    }
+
+    // Converts wordy dependency spec into array with a dependency edge
+    return deps.map((dep) => {
+        return [
+            taskNames.get(dep.requiringTaskName), taskNames.get(dep.requiredTaskName)
+        ];
+    });
+}
+
 function parseTasks(taskInput) {
     let tasks = [];
-    let taskNames = new Map();  // Maps task name to task
+    let deps  = [];
     var curHeader;
 
     const lines = taskInput.trim()
@@ -178,17 +203,7 @@ function parseTasks(taskInput) {
                 curHeader = task;
             }
             else if (task.status === "DEPS") {
-                const requiredTask = taskNames.get(task.requiredTaskName);
-                const requiringTask = taskNames.get(task.requiringTaskName);
-
-                if (requiredTask && requiringTask) {
-                    requiringTask.deps.push(requiredTask);
-                    console.dir(requiringTask);
-                }
-                else {
-                    throw "Can't find both of " + task.requiringTaskName + " and " + task.requiredTaskName;
-                }
-
+                deps.push(task);
                 continue;
             }
             else if (curHeader) {
@@ -203,14 +218,13 @@ function parseTasks(taskInput) {
                         : curHeader.endDate;
             }
 
-            taskNames.set(task.taskName, task);
             tasks.push(task);
         } else {
             throw "Invalid task " + line + "!";
         }
     }
 
-    return tasks;
+    return [tasks, deps];
 }
 
 let gantt;
