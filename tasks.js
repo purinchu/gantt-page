@@ -121,9 +121,12 @@ function resolveDeps(tasks, deps) {
 
     // Converts wordy dependency spec into array with a dependency edge
     return deps.map((dep) => {
-        return [
-            taskNames.get(dep.requiringTaskName), taskNames.get(dep.requiredTaskName)
-        ];
+        const requiredTask  = taskNames.get(dep.requiredTaskName);
+        const requiringTask = taskNames.get(dep.requiringTaskName);
+
+        requiringTask.deps.push(requiredTask);
+
+        return [ requiringTask, requiredTask ];
     });
 }
 
