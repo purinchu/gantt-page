@@ -3,7 +3,13 @@
 // Just some auxiliary functions to help with generating the d3 Gantt chart with a useful
 // ordering and dependency logic.
 //
+// Requires D3 to be present and loaded.  Tested with D3 5.x
+//
 // TODO: Make Web Scale (TM) and all Node.js'y
+
+if (!d3) {
+    throw new Error("D3 is required for tasks.js");
+}
 
 function parseTasks(taskInput) {
     let tasks = [];
