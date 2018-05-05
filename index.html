@@ -80,6 +80,7 @@ A Job depends on RMF Step 5
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="gantt.js"></script>
+    <script src="toposort.js"></script>
 
     <script>
 
@@ -97,7 +98,10 @@ btnLoadTasks.addEventListener('click', (ev) => {
         const [tasks, depNames] = parseTasks(taskInput);
         const deps = resolveDeps(tasks, depNames);
 
-        setupGanttChart(tasks);
+        const orderedTasks = toposort(tasks, deps).reverse();
+        console.log("Dependency resolution done, ordered deps:");
+        console.dir(orderedTasks);
+        setupGanttChart(orderedTasks);
     }
     catch (e) {
         console.dir(e);
