@@ -50,7 +50,17 @@ d3.gantt = function() {
     timeDomainEnd   = d3.max(tasks, (task) => task.endDate);
   };
 
- function initAxis() {
+  function makeTooltip(task) {
+    const monthFormat = d3.timeFormat("%Y-%m-%d");
+    const formattedStart = monthFormat(task.startDate);
+    const formattedEnd = monthFormat(task.endDate);
+
+    return `<b>${task.taskName}</b><br>
+          (Part of <i>${task.header.taskName}</i>)<br>
+          From ${formattedStart} to ${formattedEnd}`;
+  }
+
+  function initAxis() {
     x = d3.scaleTime()
       .domain([ timeDomainStart, d3.timeMonth.offset(timeDomainStart, 3) ])
       .nice(d3.timeWeek, 1)
@@ -85,7 +95,7 @@ d3.gantt = function() {
             .style("opacity", 0.9);
 
           // 60 in "top" should correspond to div.tooltip in index.html CSS
-          g_tooltipDiv.html(d.taskName + "<br/>")
+          g_tooltipDiv.html(makeTooltip(d), d.taskName + "<br/>")
             .style("left", (d3.event.pageX) + "px")
             .style("top",  (d3.event.pageY - 60) + "px");
         })
