@@ -69,33 +69,42 @@ d3.gantt = function() {
       .tickSize(0);
   };
 
+  function dataMerge(ganttChartGroup, tasks) {
+    var rect = ganttChartGroup.selectAll("rect").data(tasks, keyFunction);
+
+    // See D3's "General Update Pattern"
+    rect.exit().remove();
+
+    rect.enter()
+      .append("rect")
+      .attr("y", 0)
+    .merge(rect)
+      .attr("rx", (d) => (taskRoundiness[d.status] || 5))
+      .attr("ry", (d) => (taskRoundiness[d.status] || 5))
+      .attr("class", (d) => (taskStatus[d.status] || "bar"))
+      .attr("transform", rectTransform)
+      .attr("height", () => y.bandwidth())
+      .attr("width", (d) => x(d.endDate) - x(d.startDate));
+  }
+
   function gantt(tasks) {
 
     initTimeDomain(tasks);
     initAxis();
 
+    // Setup main chart area (without loading data)
     var svg = d3.select("div#gantt_wrapper")
       .append("svg")
-      .attr("class", "chart")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+        .attr("class", "chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
       .append("g")
-      .attr("class", "gantt-chart")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+        .attr("class", "gantt-chart")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    svg.selectAll(".chart")
-      .data(tasks, keyFunction).enter()
-      .append("rect")
-      .attr("rx", (d) => (taskRoundiness[d.status] || 5))
-      .attr("ry", (d) => (taskRoundiness[d.status] || 5))
-      .attr("class", (d) => (taskStatus[d.status] || "bar"))
-      .attr("y", 0)
-      .attr("transform", rectTransform)
-      .attr("height", () => y.bandwidth())
-      .attr("width", (d) => x(d.endDate) - x(d.startDate))
-
+    dataMerge(svg, tasks);
     resetAndCreateAxes();
 
     return gantt;
@@ -119,30 +128,12 @@ d3.gantt = function() {
   }
 
   gantt.redraw = function(tasks) {
-
-    console.dir(taskTypes);
     initTimeDomain(tasks);
     initAxis();
 
     var svg = d3.select("svg");
 
-    var ganttChartGroup = svg.select(".gantt-chart");
-    var rect = ganttChartGroup.selectAll("rect").data(tasks, keyFunction);
-
-    // See D3's "General Update Pattern"
-    rect.exit().remove();
-
-    rect.enter()
-      .append("rect")
-      .attr("y", 0)
-    .merge(rect)
-      .attr("rx", (d) => (taskRoundiness[d.status] || 5))
-      .attr("ry", (d) => (taskRoundiness[d.status] || 5))
-      .attr("class", (d) => (taskStatus[d.status] || "bar"))
-      .attr("transform", rectTransform)
-      .attr("height", () => y.bandwidth())
-      .attr("width", (d) => x(d.endDate) - x(d.startDate));
-
+    dataMerge(svg.select(".gantt-chart"), tasks);
     resetAndCreateAxes();
 
     return gantt;
