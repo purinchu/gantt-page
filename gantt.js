@@ -78,29 +78,46 @@ d3.gantt = function() {
 
     rect.enter()
       .append("rect")
-      .attr("y", 0)
-      .on("mouseover", d => {
-        g_tooltipDiv.transition()
-          .duration(200)
-          .style("opacity", 0.9);
-
-        // 60 in "top" should correspond to div.tooltip in index.html CSS
-        g_tooltipDiv.html(d.taskName + "<br/>")
-          .style("left", (d3.event.pageX) + "px")
-          .style("top",  (d3.event.pageY - 60) + "px");
-      })
-      .on("mouseout", d => {
+        .attr("y", 0)
+        .on("mouseover", d => {
           g_tooltipDiv.transition()
-            .duration(500)
-            .style("opacity", 0);
-      })
-    .merge(rect)
-      .attr("rx", (d) => (taskRoundiness[d.status] || 5))
-      .attr("ry", (d) => (taskRoundiness[d.status] || 5))
-      .attr("class", (d) => (taskStatus[d.status] || "bar"))
-      .attr("transform", rectTransform)
-      .attr("height", () => y.bandwidth())
-      .attr("width", (d) => x(d.endDate) - x(d.startDate));
+            .duration(200)
+            .style("opacity", 0.9);
+
+          // 60 in "top" should correspond to div.tooltip in index.html CSS
+          g_tooltipDiv.html(d.taskName + "<br/>")
+            .style("left", (d3.event.pageX) + "px")
+            .style("top",  (d3.event.pageY - 60) + "px");
+        })
+        .on("mouseout", d => {
+            g_tooltipDiv.transition()
+              .duration(500)
+              .style("opacity", 0);
+        })
+      .merge(rect)
+        .attr("rx", (d) => (taskRoundiness[d.status] || 5))
+        .attr("ry", (d) => (taskRoundiness[d.status] || 5))
+        .attr("class", (d) => (taskStatus[d.status] || "bar"))
+        .attr("transform", rectTransform)
+        .attr("height", () => y.bandwidth())
+        .attr("width", (d) => x(d.endDate) - x(d.startDate));
+
+    // Add nasty red lines for dependency-induced delays
+    var delayLines = ganttChartGroup
+      .selectAll("g.delay")
+        // filter to data that has an original start date
+        .data(tasks.filter(d => !!d.originalStartDate), keyFunction);
+
+    delayLines.exit().remove();
+    delayLines.enter()
+      .append("g")
+        .attr("class", "delay")
+      .append("line")
+      .merge(delayLines)
+        .attr("x1", d => x(d.originalStartDate))
+        .attr("y1", d => y(d.taskName))
+        .attr("x2", d => x(d.startDate))
+        .attr("y2", d => y(d.taskName) + y.bandwidth());
   }
 
   function gantt(tasks) {
