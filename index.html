@@ -121,7 +121,7 @@ btnLoadTasks.addEventListener('click', (ev) => {
             toposort(tasks, deps).reverse());
         console.log("Dependency resolution done, ordered deps:");
         console.dir(orderedTasks);
-        setupGanttChart(orderedTasks);
+        setupGanttChart(orderedTasks.filter(task => task.status !== "HEADER"));
     }
     catch (e) {
         console.dir(e);
