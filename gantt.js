@@ -29,6 +29,7 @@ d3.gantt = function() {
   var ganttNode = document.getElementById('gantt_wrapper');
   var height = ganttNode.offsetHeight;
   var width  = ganttNode.offsetWidth;
+  var g_tooltipDiv;
 
   var tickFormat = "%H:%M";
 
@@ -78,6 +79,21 @@ d3.gantt = function() {
     rect.enter()
       .append("rect")
       .attr("y", 0)
+      .on("mouseover", d => {
+        g_tooltipDiv.transition()
+          .duration(200)
+          .style("opacity", 0.9);
+
+        // 60 in "top" should correspond to div.tooltip in index.html CSS
+        g_tooltipDiv.html(d.taskName + "<br/>")
+          .style("left", (d3.event.pageX) + "px")
+          .style("top",  (d3.event.pageY - 60) + "px");
+      })
+      .on("mouseout", d => {
+          g_tooltipDiv.transition()
+            .duration(500)
+            .style("opacity", 0);
+      })
     .merge(rect)
       .attr("rx", (d) => (taskRoundiness[d.status] || 5))
       .attr("ry", (d) => (taskRoundiness[d.status] || 5))
@@ -88,9 +104,13 @@ d3.gantt = function() {
   }
 
   function gantt(tasks) {
-
     initTimeDomain(tasks);
     initAxis();
+
+    // Add a separate div for tooltips
+    g_tooltipDiv = d3.select("body").append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
 
     // Setup main chart area (without loading data)
     var svg = d3.select("div#gantt_wrapper")
