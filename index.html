@@ -109,7 +109,6 @@ btnLoadTasks.addEventListener('click', (ev) => {
     let inputArea = document.getElementById('task_input');
     const taskInput = inputArea.value;
 
-    console.log("Loading gantt chart with " + taskInput);
     let errorOut = document.getElementById('errorOutput');
     errorOut.textContent = '';
 
@@ -120,8 +119,6 @@ btnLoadTasks.addEventListener('click', (ev) => {
         const orderedTasks = addImpliedPerformerDependencies(
             relaxTaskConflicts(
                 toposort(tasks, deps).reverse()));
-        console.log("Dependency resolution done, ordered deps:");
-        console.dir(orderedTasks);
         setupGanttChart(orderedTasks.filter(task => task.status !== "HEADER"));
     }
     catch (e) {
