@@ -70,7 +70,7 @@ d3.gantt = function() {
       .range([ 0, width ]).clamp(true);
 
     y = d3.scaleBand()
-      .domain(taskTypes)
+      .domain(Array.from(taskTypes).sort())
       .range([ 0, height - margin.top - margin.bottom ])
       .padding(0.5)
       .align(0.5);
