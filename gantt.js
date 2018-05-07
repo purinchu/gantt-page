@@ -118,8 +118,8 @@ d3.gantt = function() {
     // Add nasty red lines for dependency-induced delays
     var delayLines = ganttChartGroup
       .selectAll("g.delay")
-        // filter to data that has an original start date
-        .data(tasks.filter(d => !!d.originalStartDate), keyFunction);
+        // filter to data that has an original start date and were not "floating"
+        .data(tasks.filter(d => !!d.originalStartDate && !d.duration), keyFunction);
 
     delayLines.exit().remove();
     delayLines.enter()
