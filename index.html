@@ -81,14 +81,400 @@ g.delay line {
 # Use this "#" character to start a comment that the program ignores
 
 # Opens up a new group of tasks
--- Major Group 1 --
+-- General --
 
-# Tasks follow: "name" from "start date" to "end date"
-RMF Step 5 (Cyber) from 2018-04-02 to 2018-04-12
-Sys1 API 20 (API COE) from 2018-05-01 to 2018-05-30
+# Tasks follow: "name" ("performer") from "start date" to "end date"
+# or, "name" ("performer") takes "days" days
+#    but this only works if you add dependencies (see below)
 
-# Add dependencies here: "later task" depends on "earlier task"
-Sys1 API 20 depends on RMF Step 5
+API guidance (API COE) from 2018-05-10 to 2018-05-20
+UI guidance (SPOE) from 2018-05-10 to 2018-05-20
+
+# Add dependencies with: "later task" depends on "earlier task"
+
+# An automated set of tasks follows from here.  One day this will
+# itself be possible to express here and this page would auto-
+# generate it for you.  But for now here's an example:
+
+-- sys1/BizP1 --
+sys1/BizP1 design APIs (sys1.2) takes 14 days
+sys1/BizP1 design APIs depends on API guidance
+sys1/BizP1 API review (API COE.2) takes 10 days
+sys1/BizP1 API review depends on sys1/BizP1 design APIs
+sys1/BizP1 API approval (API COE) takes 8 days
+sys1/BizP1 API approval depends on sys1/BizP1 API review
+sys1/BizP1 implement API (sys1.3) takes 30 days
+sys1/BizP1 implement API depends on sys1/BizP1 API review
+
+sys1/BizP1 design UI (sys1.4) takes 14 days
+sys1/BizP1 design UI depends on UI guidance
+sys1/BizP1 UI review (SPOE.2) takes 10 days
+sys1/BizP1 UI review depends on sys1/BizP1 design UI
+sys1/BizP1 UI approval (SPOE) takes 5 days
+sys1/BizP1 UI approval depends on sys1/BizP1 UI review
+sys1/BizP1 implement UI (sys1.1) takes 30 days
+sys1/BizP1 implement UI depends on sys1/BizP1 UI review
+
+sys1/BizP1 request data usage (sys1.2) takes 3 days
+sys1/BizP1 request data usage depends on sys1/BizP1 design APIs
+sys1/BizP1 review data use request (EIM.2) takes 10 days
+sys1/BizP1 review data use request depends on sys1/BizP1 request data usage
+sys1/BizP1 approve data usage (EIM) takes 5 days
+sys1/BizP1 approve data usage depends on sys1/BizP1 review data use request
+
+sys1/BizP1 cybersecurity review (Acq IA.2) takes 150 days
+sys1/BizP1 cybersecurity review depends on sys1/BizP1 implement API
+sys1/BizP1 cybersecurity review depends on sys1/BizP1 implement UI
+sys1/BizP1 cybersecurity approval (Acq IA) takes 30 days
+sys1/BizP1 cybersecurity approval depends on sys1/BizP1 cybersecurity review
+
+sys1/BizP1 deploy to production (sys1) takes 5 days
+sys1/BizP1 deploy to production depends on sys1/BizP1 cybersecurity approval
+sys1/BizP1 deploy to production depends on sys1/BizP1 approve data usage
+sys1/BizP1 deploy to production depends on sys1/BizP1 implement API
+sys1/BizP1 deploy to production depends on sys1/BizP1 implement UI
+
+-- sys1/BizP2 --
+sys1/BizP2 design APIs (sys1.3) takes 14 days
+sys1/BizP2 design APIs depends on API guidance
+sys1/BizP2 API review (API COE.3) takes 10 days
+sys1/BizP2 API review depends on sys1/BizP2 design APIs
+sys1/BizP2 API approval (API COE) takes 8 days
+sys1/BizP2 API approval depends on sys1/BizP2 API review
+sys1/BizP2 implement API (sys1.4) takes 30 days
+sys1/BizP2 implement API depends on sys1/BizP2 API review
+
+sys1/BizP2 design UI (sys1.1) takes 14 days
+sys1/BizP2 design UI depends on UI guidance
+sys1/BizP2 UI review (SPOE.3) takes 10 days
+sys1/BizP2 UI review depends on sys1/BizP2 design UI
+sys1/BizP2 UI approval (SPOE) takes 5 days
+sys1/BizP2 UI approval depends on sys1/BizP2 UI review
+sys1/BizP2 implement UI (sys1.2) takes 30 days
+sys1/BizP2 implement UI depends on sys1/BizP2 UI review
+
+sys1/BizP2 request data usage (sys1.3) takes 3 days
+sys1/BizP2 request data usage depends on sys1/BizP2 design APIs
+sys1/BizP2 review data use request (EIM.3) takes 10 days
+sys1/BizP2 review data use request depends on sys1/BizP2 request data usage
+sys1/BizP2 approve data usage (EIM) takes 5 days
+sys1/BizP2 approve data usage depends on sys1/BizP2 review data use request
+
+sys1/BizP2 cybersecurity review (Acq IA.3) takes 150 days
+sys1/BizP2 cybersecurity review depends on sys1/BizP2 implement API
+sys1/BizP2 cybersecurity review depends on sys1/BizP2 implement UI
+sys1/BizP2 cybersecurity approval (Acq IA) takes 30 days
+sys1/BizP2 cybersecurity approval depends on sys1/BizP2 cybersecurity review
+
+sys1/BizP2 deploy to production (sys1) takes 5 days
+sys1/BizP2 deploy to production depends on sys1/BizP2 cybersecurity approval
+sys1/BizP2 deploy to production depends on sys1/BizP2 approve data usage
+sys1/BizP2 deploy to production depends on sys1/BizP2 implement API
+sys1/BizP2 deploy to production depends on sys1/BizP2 implement UI
+
+-- sys2/BizP1 --
+sys2/BizP1 design APIs (sys2.2) takes 14 days
+sys2/BizP1 design APIs depends on API guidance
+sys2/BizP1 API review (API COE.4) takes 10 days
+sys2/BizP1 API review depends on sys2/BizP1 design APIs
+sys2/BizP1 API approval (API COE) takes 8 days
+sys2/BizP1 API approval depends on sys2/BizP1 API review
+sys2/BizP1 implement API (sys2.3) takes 30 days
+sys2/BizP1 implement API depends on sys2/BizP1 API review
+
+sys2/BizP1 design UI (sys2.4) takes 14 days
+sys2/BizP1 design UI depends on UI guidance
+sys2/BizP1 UI review (SPOE.4) takes 10 days
+sys2/BizP1 UI review depends on sys2/BizP1 design UI
+sys2/BizP1 UI approval (SPOE) takes 5 days
+sys2/BizP1 UI approval depends on sys2/BizP1 UI review
+sys2/BizP1 implement UI (sys2.1) takes 30 days
+sys2/BizP1 implement UI depends on sys2/BizP1 UI review
+
+sys2/BizP1 request data usage (sys2.2) takes 3 days
+sys2/BizP1 request data usage depends on sys2/BizP1 design APIs
+sys2/BizP1 review data use request (EIM.4) takes 10 days
+sys2/BizP1 review data use request depends on sys2/BizP1 request data usage
+sys2/BizP1 approve data usage (EIM) takes 5 days
+sys2/BizP1 approve data usage depends on sys2/BizP1 review data use request
+
+sys2/BizP1 cybersecurity review (Acq IA.4) takes 150 days
+sys2/BizP1 cybersecurity review depends on sys2/BizP1 implement API
+sys2/BizP1 cybersecurity review depends on sys2/BizP1 implement UI
+sys2/BizP1 cybersecurity approval (Acq IA) takes 30 days
+sys2/BizP1 cybersecurity approval depends on sys2/BizP1 cybersecurity review
+
+sys2/BizP1 deploy to production (sys2) takes 5 days
+sys2/BizP1 deploy to production depends on sys2/BizP1 cybersecurity approval
+sys2/BizP1 deploy to production depends on sys2/BizP1 approve data usage
+sys2/BizP1 deploy to production depends on sys2/BizP1 implement API
+sys2/BizP1 deploy to production depends on sys2/BizP1 implement UI
+
+-- sys2/BizP2 --
+sys2/BizP2 design APIs (sys2.3) takes 14 days
+sys2/BizP2 design APIs depends on API guidance
+sys2/BizP2 API review (API COE.1) takes 10 days
+sys2/BizP2 API review depends on sys2/BizP2 design APIs
+sys2/BizP2 API approval (API COE) takes 8 days
+sys2/BizP2 API approval depends on sys2/BizP2 API review
+sys2/BizP2 implement API (sys2.4) takes 30 days
+sys2/BizP2 implement API depends on sys2/BizP2 API review
+
+sys2/BizP2 design UI (sys2.1) takes 14 days
+sys2/BizP2 design UI depends on UI guidance
+sys2/BizP2 UI review (SPOE.1) takes 10 days
+sys2/BizP2 UI review depends on sys2/BizP2 design UI
+sys2/BizP2 UI approval (SPOE) takes 5 days
+sys2/BizP2 UI approval depends on sys2/BizP2 UI review
+sys2/BizP2 implement UI (sys2.2) takes 30 days
+sys2/BizP2 implement UI depends on sys2/BizP2 UI review
+
+sys2/BizP2 request data usage (sys2.3) takes 3 days
+sys2/BizP2 request data usage depends on sys2/BizP2 design APIs
+sys2/BizP2 review data use request (EIM.1) takes 10 days
+sys2/BizP2 review data use request depends on sys2/BizP2 request data usage
+sys2/BizP2 approve data usage (EIM) takes 5 days
+sys2/BizP2 approve data usage depends on sys2/BizP2 review data use request
+
+sys2/BizP2 cybersecurity review (Acq IA.1) takes 150 days
+sys2/BizP2 cybersecurity review depends on sys2/BizP2 implement API
+sys2/BizP2 cybersecurity review depends on sys2/BizP2 implement UI
+sys2/BizP2 cybersecurity approval (Acq IA) takes 30 days
+sys2/BizP2 cybersecurity approval depends on sys2/BizP2 cybersecurity review
+
+sys2/BizP2 deploy to production (sys2) takes 5 days
+sys2/BizP2 deploy to production depends on sys2/BizP2 cybersecurity approval
+sys2/BizP2 deploy to production depends on sys2/BizP2 approve data usage
+sys2/BizP2 deploy to production depends on sys2/BizP2 implement API
+sys2/BizP2 deploy to production depends on sys2/BizP2 implement UI
+
+-- sys3/BizP1 --
+sys3/BizP1 design APIs (sys3.2) takes 14 days
+sys3/BizP1 design APIs depends on API guidance
+sys3/BizP1 API review (API COE.2) takes 10 days
+sys3/BizP1 API review depends on sys3/BizP1 design APIs
+sys3/BizP1 API approval (API COE) takes 8 days
+sys3/BizP1 API approval depends on sys3/BizP1 API review
+sys3/BizP1 implement API (sys3.3) takes 30 days
+sys3/BizP1 implement API depends on sys3/BizP1 API review
+
+sys3/BizP1 design UI (sys3.4) takes 14 days
+sys3/BizP1 design UI depends on UI guidance
+sys3/BizP1 UI review (SPOE.2) takes 10 days
+sys3/BizP1 UI review depends on sys3/BizP1 design UI
+sys3/BizP1 UI approval (SPOE) takes 5 days
+sys3/BizP1 UI approval depends on sys3/BizP1 UI review
+sys3/BizP1 implement UI (sys3.1) takes 30 days
+sys3/BizP1 implement UI depends on sys3/BizP1 UI review
+
+sys3/BizP1 request data usage (sys3.2) takes 3 days
+sys3/BizP1 request data usage depends on sys3/BizP1 design APIs
+sys3/BizP1 review data use request (EIM.2) takes 10 days
+sys3/BizP1 review data use request depends on sys3/BizP1 request data usage
+sys3/BizP1 approve data usage (EIM) takes 5 days
+sys3/BizP1 approve data usage depends on sys3/BizP1 review data use request
+
+sys3/BizP1 cybersecurity review (Acq IA.2) takes 150 days
+sys3/BizP1 cybersecurity review depends on sys3/BizP1 implement API
+sys3/BizP1 cybersecurity review depends on sys3/BizP1 implement UI
+sys3/BizP1 cybersecurity approval (Acq IA) takes 30 days
+sys3/BizP1 cybersecurity approval depends on sys3/BizP1 cybersecurity review
+
+sys3/BizP1 deploy to production (sys3) takes 5 days
+sys3/BizP1 deploy to production depends on sys3/BizP1 cybersecurity approval
+sys3/BizP1 deploy to production depends on sys3/BizP1 approve data usage
+sys3/BizP1 deploy to production depends on sys3/BizP1 implement API
+sys3/BizP1 deploy to production depends on sys3/BizP1 implement UI
+
+-- sys3/BizP2 --
+sys3/BizP2 design APIs (sys3.3) takes 14 days
+sys3/BizP2 design APIs depends on API guidance
+sys3/BizP2 API review (API COE.3) takes 10 days
+sys3/BizP2 API review depends on sys3/BizP2 design APIs
+sys3/BizP2 API approval (API COE) takes 8 days
+sys3/BizP2 API approval depends on sys3/BizP2 API review
+sys3/BizP2 implement API (sys3.4) takes 30 days
+sys3/BizP2 implement API depends on sys3/BizP2 API review
+
+sys3/BizP2 design UI (sys3.1) takes 14 days
+sys3/BizP2 design UI depends on UI guidance
+sys3/BizP2 UI review (SPOE.3) takes 10 days
+sys3/BizP2 UI review depends on sys3/BizP2 design UI
+sys3/BizP2 UI approval (SPOE) takes 5 days
+sys3/BizP2 UI approval depends on sys3/BizP2 UI review
+sys3/BizP2 implement UI (sys3.2) takes 30 days
+sys3/BizP2 implement UI depends on sys3/BizP2 UI review
+
+sys3/BizP2 request data usage (sys3.3) takes 3 days
+sys3/BizP2 request data usage depends on sys3/BizP2 design APIs
+sys3/BizP2 review data use request (EIM.3) takes 10 days
+sys3/BizP2 review data use request depends on sys3/BizP2 request data usage
+sys3/BizP2 approve data usage (EIM) takes 5 days
+sys3/BizP2 approve data usage depends on sys3/BizP2 review data use request
+
+sys3/BizP2 cybersecurity review (Acq IA.3) takes 150 days
+sys3/BizP2 cybersecurity review depends on sys3/BizP2 implement API
+sys3/BizP2 cybersecurity review depends on sys3/BizP2 implement UI
+sys3/BizP2 cybersecurity approval (Acq IA) takes 30 days
+sys3/BizP2 cybersecurity approval depends on sys3/BizP2 cybersecurity review
+
+sys3/BizP2 deploy to production (sys3) takes 5 days
+sys3/BizP2 deploy to production depends on sys3/BizP2 cybersecurity approval
+sys3/BizP2 deploy to production depends on sys3/BizP2 approve data usage
+sys3/BizP2 deploy to production depends on sys3/BizP2 implement API
+sys3/BizP2 deploy to production depends on sys3/BizP2 implement UI
+
+-- sys4/BizP1 --
+sys4/BizP1 design APIs (sys4.2) takes 14 days
+sys4/BizP1 design APIs depends on API guidance
+sys4/BizP1 API review (API COE.4) takes 10 days
+sys4/BizP1 API review depends on sys4/BizP1 design APIs
+sys4/BizP1 API approval (API COE) takes 8 days
+sys4/BizP1 API approval depends on sys4/BizP1 API review
+sys4/BizP1 implement API (sys4.3) takes 30 days
+sys4/BizP1 implement API depends on sys4/BizP1 API review
+
+sys4/BizP1 design UI (sys4.4) takes 14 days
+sys4/BizP1 design UI depends on UI guidance
+sys4/BizP1 UI review (SPOE.4) takes 10 days
+sys4/BizP1 UI review depends on sys4/BizP1 design UI
+sys4/BizP1 UI approval (SPOE) takes 5 days
+sys4/BizP1 UI approval depends on sys4/BizP1 UI review
+sys4/BizP1 implement UI (sys4.1) takes 30 days
+sys4/BizP1 implement UI depends on sys4/BizP1 UI review
+
+sys4/BizP1 request data usage (sys4.2) takes 3 days
+sys4/BizP1 request data usage depends on sys4/BizP1 design APIs
+sys4/BizP1 review data use request (EIM.4) takes 10 days
+sys4/BizP1 review data use request depends on sys4/BizP1 request data usage
+sys4/BizP1 approve data usage (EIM) takes 5 days
+sys4/BizP1 approve data usage depends on sys4/BizP1 review data use request
+
+sys4/BizP1 cybersecurity review (Acq IA.4) takes 150 days
+sys4/BizP1 cybersecurity review depends on sys4/BizP1 implement API
+sys4/BizP1 cybersecurity review depends on sys4/BizP1 implement UI
+sys4/BizP1 cybersecurity approval (Acq IA) takes 30 days
+sys4/BizP1 cybersecurity approval depends on sys4/BizP1 cybersecurity review
+
+sys4/BizP1 deploy to production (sys4) takes 5 days
+sys4/BizP1 deploy to production depends on sys4/BizP1 cybersecurity approval
+sys4/BizP1 deploy to production depends on sys4/BizP1 approve data usage
+sys4/BizP1 deploy to production depends on sys4/BizP1 implement API
+sys4/BizP1 deploy to production depends on sys4/BizP1 implement UI
+
+-- sys4/BizP2 --
+sys4/BizP2 design APIs (sys4.3) takes 14 days
+sys4/BizP2 design APIs depends on API guidance
+sys4/BizP2 API review (API COE.1) takes 10 days
+sys4/BizP2 API review depends on sys4/BizP2 design APIs
+sys4/BizP2 API approval (API COE) takes 8 days
+sys4/BizP2 API approval depends on sys4/BizP2 API review
+sys4/BizP2 implement API (sys4.4) takes 30 days
+sys4/BizP2 implement API depends on sys4/BizP2 API review
+
+sys4/BizP2 design UI (sys4.1) takes 14 days
+sys4/BizP2 design UI depends on UI guidance
+sys4/BizP2 UI review (SPOE.1) takes 10 days
+sys4/BizP2 UI review depends on sys4/BizP2 design UI
+sys4/BizP2 UI approval (SPOE) takes 5 days
+sys4/BizP2 UI approval depends on sys4/BizP2 UI review
+sys4/BizP2 implement UI (sys4.2) takes 30 days
+sys4/BizP2 implement UI depends on sys4/BizP2 UI review
+
+sys4/BizP2 request data usage (sys4.3) takes 3 days
+sys4/BizP2 request data usage depends on sys4/BizP2 design APIs
+sys4/BizP2 review data use request (EIM.1) takes 10 days
+sys4/BizP2 review data use request depends on sys4/BizP2 request data usage
+sys4/BizP2 approve data usage (EIM) takes 5 days
+sys4/BizP2 approve data usage depends on sys4/BizP2 review data use request
+
+sys4/BizP2 cybersecurity review (Acq IA.1) takes 150 days
+sys4/BizP2 cybersecurity review depends on sys4/BizP2 implement API
+sys4/BizP2 cybersecurity review depends on sys4/BizP2 implement UI
+sys4/BizP2 cybersecurity approval (Acq IA) takes 30 days
+sys4/BizP2 cybersecurity approval depends on sys4/BizP2 cybersecurity review
+
+sys4/BizP2 deploy to production (sys4) takes 5 days
+sys4/BizP2 deploy to production depends on sys4/BizP2 cybersecurity approval
+sys4/BizP2 deploy to production depends on sys4/BizP2 approve data usage
+sys4/BizP2 deploy to production depends on sys4/BizP2 implement API
+sys4/BizP2 deploy to production depends on sys4/BizP2 implement UI
+
+-- sys5/BizP1 --
+sys5/BizP1 design APIs (sys5.2) takes 14 days
+sys5/BizP1 design APIs depends on API guidance
+sys5/BizP1 API review (API COE.2) takes 10 days
+sys5/BizP1 API review depends on sys5/BizP1 design APIs
+sys5/BizP1 API approval (API COE) takes 8 days
+sys5/BizP1 API approval depends on sys5/BizP1 API review
+sys5/BizP1 implement API (sys5.3) takes 30 days
+sys5/BizP1 implement API depends on sys5/BizP1 API review
+
+sys5/BizP1 design UI (sys5.4) takes 14 days
+sys5/BizP1 design UI depends on UI guidance
+sys5/BizP1 UI review (SPOE.2) takes 10 days
+sys5/BizP1 UI review depends on sys5/BizP1 design UI
+sys5/BizP1 UI approval (SPOE) takes 5 days
+sys5/BizP1 UI approval depends on sys5/BizP1 UI review
+sys5/BizP1 implement UI (sys5.1) takes 30 days
+sys5/BizP1 implement UI depends on sys5/BizP1 UI review
+
+sys5/BizP1 request data usage (sys5.2) takes 3 days
+sys5/BizP1 request data usage depends on sys5/BizP1 design APIs
+sys5/BizP1 review data use request (EIM.2) takes 10 days
+sys5/BizP1 review data use request depends on sys5/BizP1 request data usage
+sys5/BizP1 approve data usage (EIM) takes 5 days
+sys5/BizP1 approve data usage depends on sys5/BizP1 review data use request
+
+sys5/BizP1 cybersecurity review (Acq IA.2) takes 150 days
+sys5/BizP1 cybersecurity review depends on sys5/BizP1 implement API
+sys5/BizP1 cybersecurity review depends on sys5/BizP1 implement UI
+sys5/BizP1 cybersecurity approval (Acq IA) takes 30 days
+sys5/BizP1 cybersecurity approval depends on sys5/BizP1 cybersecurity review
+
+sys5/BizP1 deploy to production (sys5) takes 5 days
+sys5/BizP1 deploy to production depends on sys5/BizP1 cybersecurity approval
+sys5/BizP1 deploy to production depends on sys5/BizP1 approve data usage
+sys5/BizP1 deploy to production depends on sys5/BizP1 implement API
+sys5/BizP1 deploy to production depends on sys5/BizP1 implement UI
+
+-- sys5/BizP2 --
+sys5/BizP2 design APIs (sys5.3) takes 14 days
+sys5/BizP2 design APIs depends on API guidance
+sys5/BizP2 API review (API COE.3) takes 10 days
+sys5/BizP2 API review depends on sys5/BizP2 design APIs
+sys5/BizP2 API approval (API COE) takes 8 days
+sys5/BizP2 API approval depends on sys5/BizP2 API review
+sys5/BizP2 implement API (sys5.4) takes 30 days
+sys5/BizP2 implement API depends on sys5/BizP2 API review
+
+sys5/BizP2 design UI (sys5.1) takes 14 days
+sys5/BizP2 design UI depends on UI guidance
+sys5/BizP2 UI review (SPOE.3) takes 10 days
+sys5/BizP2 UI review depends on sys5/BizP2 design UI
+sys5/BizP2 UI approval (SPOE) takes 5 days
+sys5/BizP2 UI approval depends on sys5/BizP2 UI review
+sys5/BizP2 implement UI (sys5.2) takes 30 days
+sys5/BizP2 implement UI depends on sys5/BizP2 UI review
+
+sys5/BizP2 request data usage (sys5.3) takes 3 days
+sys5/BizP2 request data usage depends on sys5/BizP2 design APIs
+sys5/BizP2 review data use request (EIM.3) takes 10 days
+sys5/BizP2 review data use request depends on sys5/BizP2 request data usage
+sys5/BizP2 approve data usage (EIM) takes 5 days
+sys5/BizP2 approve data usage depends on sys5/BizP2 review data use request
+
+sys5/BizP2 cybersecurity review (Acq IA.3) takes 150 days
+sys5/BizP2 cybersecurity review depends on sys5/BizP2 implement API
+sys5/BizP2 cybersecurity review depends on sys5/BizP2 implement UI
+sys5/BizP2 cybersecurity approval (Acq IA) takes 30 days
+sys5/BizP2 cybersecurity approval depends on sys5/BizP2 cybersecurity review
+
+sys5/BizP2 deploy to production (sys5) takes 5 days
+sys5/BizP2 deploy to production depends on sys5/BizP2 cybersecurity approval
+sys5/BizP2 deploy to production depends on sys5/BizP2 approve data usage
+sys5/BizP2 deploy to production depends on sys5/BizP2 implement API
+sys5/BizP2 deploy to production depends on sys5/BizP2 implement UI
             </textarea>
             <button id="btn_load_tasks">Load Tasks into Chart</button>
         </div>
