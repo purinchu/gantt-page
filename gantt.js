@@ -64,7 +64,8 @@ d3.gantt = function() {
 
   function initAxis() {
     x = d3.scaleTime()
-      .domain([ timeDomainStart, d3.timeMonth.offset(timeDomainStart, 3) ])
+//    .domain([ timeDomainStart, d3.timeMonth.offset(timeDomainStart, 3) ])
+      .domain([ timeDomainStart, timeDomainEnd ])
       .nice(d3.timeWeek, 1)
       .range([ 0, width ]).clamp(true);
 
