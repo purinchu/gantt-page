@@ -202,3 +202,41 @@ function relaxTaskConflicts(tasks) {
 
     return tasks;
 }
+
+// Assuming tasks are already in dependency order, ensures that tasks that have
+// the same performer have implied happens-after dependencies added.  The
+// implied ordering is based on the start dates assigned.  This means each task
+// needs to *have* a start date.
+function addImpliedPerformerDependencies(tasks) {
+    let performerTasks = new Map();
+
+    // First break up the tasks by performer.
+    for (const task of tasks) {
+        let taskArray = performerTasks.get(task.performer);
+        if (taskArray) {
+            taskArray.push(task);
+        }
+        else {
+            performerTasks.set(task.performer, [task]);
+        }
+    }
+
+    // Sort each performer array by start Date and link tasks together
+    performerTasks.forEach((performersTasks, performer) => {
+        // in-place sort!
+        performersTasks.sort((a, b) => {
+            if (a.startDate.getTime() < b.startDate.getTime()) { return -1; }
+            if (a.startDate.getTime() > b.startDate.getTime()) { return  1; }
+            return 0;
+        });
+
+        performersTasks.reduce((l, r) => {
+            r.deps.push(l); // Add implied dep
+            return r;       // Don't accumulate, just return so this becomes new 'l'
+        });
+    });
+
+    // To make these dependencies take effect we have to re-run
+    // relaxTaskConflicts (at least until I find faster way)
+    return relaxTaskConflicts(tasks);
+}
