@@ -25,8 +25,8 @@ div#errorOutput {
 div.tooltip {
     position: absolute;
     text-align: center;
-    width: 150px;
-    height: 60px; /* Should correspond to D3 g_tooltipDiv.style in gantt.js */
+    width: 250px;
+    height: 150px; /* Should correspond to D3 g_tooltipDiv.style in gantt.js */
     padding: 4px;
     font: 12px sans-serif;
     background: lightsteelblue;
@@ -84,11 +84,11 @@ g.delay line {
 -- Major Group 1 --
 
 # Tasks follow: "name" from "start date" to "end date"
-RMF Step 5 from 2018-04-02 to 2018-04-12
-A Job from 2018-05-01 to 2018-05-30
+RMF Step 5 (Cyber) from 2018-04-02 to 2018-04-12
+Sys1 API 20 (API COE) from 2018-05-01 to 2018-05-30
 
 # Add dependencies here: "later task" depends on "earlier task"
-A Job depends on RMF Step 5
+Sys1 API 20 depends on RMF Step 5
             </textarea>
             <button id="btn_load_tasks">Load Tasks into Chart</button>
         </div>

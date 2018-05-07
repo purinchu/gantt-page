@@ -45,32 +45,49 @@ function parseTasks(taskInput) {
 
     return [tasks, deps];
 
+    function decodeTaskSpec(taskSpec) {
+        // "blah blah task name (performer) this part ignored"
+        const taskPerformerSpec_re = /^([^(]*)\(([^)]+)\)/;
+        const result = taskPerformerSpec_re.exec(taskSpec);
+
+        if (result) {
+            return [result[1].trim(), result[2].trim()];
+        }
+        else {
+            return [taskSpec, null]; // no performer
+        }
+    }
+
     function taskFromInputLine(line) {
         // line must be .trim()'d already for regex to work right
 
         // Look for dependency (syntax 1)
-        const line_re = /([a-zA-Z0-9_ ]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])$/;
+        const line_re = /([a-zA-Z0-9_ ()]+) [fF]rom (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9]) [tT]o (2[0-9]{3}-[0-1]?[0-9]-[0-3]?[0-9])$/;
 
         let result = line_re.exec(line);
         if (result) {
+            const [name, perf] = decodeTaskSpec(result[1].trim());
             return {
                 startDate: new Date(result[2]),
                 endDate  : new Date(result[3]),
-                taskName : result[1].trim(),
+                taskName : name,
+                performer: perf,
                 deps     : [ ],
                 status   : "TASK"
             };
         }
 
         // Look for dependency with duration (syntax 2)
-        const task_dep_re = /([a-zA-Z0-9_ ]+) [tT]akes ([0-9]+) days?$/;
+        const task_dep_re = /([a-zA-Z0-9_ ()]+) [tT]akes ([0-9]+) days?$/;
         result = task_dep_re.exec(line);
         if (result) {
+            const [name, perf] = decodeTaskSpec(result[1].trim());
             return {
                 startDate: null,
                 endDate  : null,
                 duration : +(result[2].trim()),
-                taskName : result[1].trim(),
+                taskName : name,
+                performer: perf,
                 deps     : [ ],
                 status   : "TASK"
             }
@@ -89,7 +106,7 @@ function parseTasks(taskInput) {
         }
 
         // Look for dependency declaration
-        result = /^([a-zA-Z0-9_ ]+)\s*(?:[Dd]epends on|[Nn]eeds)\s([a-zA-Z0-9_ ]+)$/.exec(line);
+        result = /^([a-zA-Z0-9_() ]+)\s*(?:[Dd]epends on|[Nn]eeds)\s([a-zA-Z0-9_() ]+)$/.exec(line);
         if (result) {
             console.log(`Adding ${result[2]} as a dependency of ${result[1]}`);
             return {

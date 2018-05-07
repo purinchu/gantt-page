@@ -54,10 +54,12 @@ d3.gantt = function() {
     const monthFormat = d3.timeFormat("%Y-%m-%d");
     const formattedStart = monthFormat(task.startDate);
     const formattedEnd = monthFormat(task.endDate);
+    const performer = task.performer || "??";
 
     return `<b>${task.taskName}</b><br>
           (Part of <i>${task.header.taskName}</i>)<br>
-          From ${formattedStart} to ${formattedEnd}`;
+          From ${formattedStart} to ${formattedEnd}<br>
+          Worked by ${performer}`;
   }
 
   function initAxis() {
