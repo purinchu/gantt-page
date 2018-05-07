@@ -128,19 +128,17 @@ function resolveDeps(tasks, deps) {
     let taskNames = new Map();  // Maps task name to task
     tasks.forEach(t => taskNames.set(t.taskName, t));
 
-    if (!deps.every(dep => taskNames.has(dep.requiredTaskName) && taskNames.has(dep.requiringTaskName)))
-    {
-        let missingTasks = deps
-            .filter(dep => !taskNames.has(dep.requiredTaskName) || !taskNames.has(dep.requiringTaskName))
-            .map(brokenDep => [brokenDep.requiringTaskName, brokenDep.requiredTaskName])
-            .reduce((acc, task) => acc.concat(task), []);
-        throw new Error("Missing tasks " + missingTasks.join(', '));
-    }
-
     // Converts wordy dependency spec into array with a dependency edge
     return deps.map((dep) => {
         const requiredTask  = taskNames.get(dep.requiredTaskName);
+        if (!requiredTask) {
+            throw new Error('No such required task ' + dep.requiredTaskName);
+        }
+
         const requiringTask = taskNames.get(dep.requiringTaskName);
+        if (!requiringTask) {
+            throw new Error('No such requiring task ' + dep.requiringTaskName);
+        }
 
         requiringTask.deps.push(requiredTask);
 
