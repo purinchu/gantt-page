@@ -38,7 +38,7 @@ d3.gantt = function() {
   };
 
   var rectTransform = function(d) {
-    return "translate(" + x(d.startDate) + "," + y(d.taskName) + ")";
+    return "translate(" + x(d.startDate) + "," + y(d.performer) + ")";
   };
 
   var x,y,xAxis,yAxis;
@@ -127,9 +127,9 @@ d3.gantt = function() {
       .append("line")
       .merge(delayLines)
         .attr("x1", d => x(d.originalStartDate))
-        .attr("y1", d => y(d.taskName))
+        .attr("y1", d => y(d.performer))
         .attr("x2", d => x(d.startDate))
-        .attr("y2", d => y(d.taskName) + y.bandwidth());
+        .attr("y2", d => y(d.performer) + y.bandwidth());
   }
 
   function gantt(tasks) {

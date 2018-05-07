@@ -140,17 +140,17 @@ function setupGanttChart(tasks) {
         "KILLED" : "bar-killed"
     };
 
-    const taskNames = [ ...(new Set(tasks.map((x) => x.taskName))) ];
+    const taskPerformers = [ ...(new Set(tasks.map(x => x.performer))) ];
 
     if (!gantt) {
         gantt = d3.gantt()
-            .taskTypes(taskNames)
+            .taskTypes(taskPerformers)
             .taskStatus(taskStatus)
             .tickFormat("%b (%V)");
         gantt(tasks);
     }
     else {
-        gantt.taskTypes(taskNames)
+        gantt.taskTypes(taskPerformers)
             .redraw(tasks);
     }
 }
