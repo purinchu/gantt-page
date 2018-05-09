@@ -166,7 +166,10 @@ function relaxTaskConflicts(tasks) {
             task.startDate = new Date();
         }
 
-        for(const dep of task.deps) {
+        // Use task.deps for "real" dependencies but also include implied
+        // dependencies which are just used to prevent concurrent performance
+        // of tasks by the same performer
+        for(const dep of task.deps.concat(task.impliedDeps || [])) {
             if (dep.endDate > task.startDate) {
                 const duration = task.duration || Math.ceil(
                     (task.endDate.getTime() - task.startDate.getTime()) /
@@ -179,6 +182,12 @@ function relaxTaskConflicts(tasks) {
                 task.endDate = new Date(task.startDate.getTime());
                 task.endDate.setDate(task.endDate.getDate() + duration);
             }
+        }
+
+        // If we have implied dependencies they have met their need and we can
+        // remove them here
+        if (task.impliedDeps) {
+            delete task.impliedDeps;
         }
 
         if (!task.endDate) {
@@ -211,6 +220,10 @@ function relaxTaskConflicts(tasks) {
 function addImpliedPerformerDependencies(tasks) {
     let performerTasks = new Map();
 
+    // Track "implied" dependencies separately so that we can show only "real"
+    // dependencies.
+    tasks.forEach(task => task.impliedDeps = []);
+
     // First break up the tasks by performer.
     for (const task of tasks) {
         let taskArray = performerTasks.get(task.performer);
@@ -232,8 +245,9 @@ function addImpliedPerformerDependencies(tasks) {
         });
 
         performersTasks.reduce((l, r) => {
-            r.deps.push(l); // Add implied dep
-            return r;       // Don't accumulate, just return so this becomes new 'l'
+            r.impliedDeps.push(l); // Add implied dep
+            // Don't accumulate, just return so this becomes new 'l'
+            return r;
         });
     });
 
