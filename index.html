@@ -82,6 +82,7 @@ rect.highlight {
     <div id="errorOutput">Loading...</div>
     <div id="content">
         <div id="input_wrapper">
+            <button disabled id="btn_load_tasks">Load Tasks into Chart</button>
             <textarea cols="50" rows="50" id="task_input">
 # Use this "#" character to start a comment that the program ignores
 
@@ -481,7 +482,6 @@ sys5/BizP2 deploy to production depends on sys5/BizP2 approve data usage
 sys5/BizP2 deploy to production depends on sys5/BizP2 implement API
 sys5/BizP2 deploy to production depends on sys5/BizP2 implement UI
             </textarea>
-            <button disabled id="btn_load_tasks">Load Tasks into Chart</button>
         </div>
 
         <div id="gantt_wrapper"></div>
@@ -535,8 +535,7 @@ btnLoadTasks.addEventListener('click', (ev) => {
 // page has loaded
 window.addEventListener('load', ev => {
     btnLoadTasks.removeAttribute('disabled');
-    let loadingDiv = document.getElementById('errorOutput');
-    loadingDiv.textContent = 'Ready (try clicking Load tasks below...)';
+    btnLoadTasks.click();  // Will clear the loading text
 });
 
 let gantt;
