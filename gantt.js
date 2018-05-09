@@ -88,6 +88,12 @@ d3.gantt = function() {
   function dataMerge(ganttChartGroup, tasks) {
     var rect = ganttChartGroup.selectAll("rect").data(tasks, keyFunction);
 
+    // Create color scale for all groups (i.e. headers)
+    const uniqueHeaders = [... new Set(tasks.map(task => task.header.taskName || ''))];
+
+    let colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+    colorScale.domain(uniqueHeaders);
+
     // Used for task highlighting in mousein/mouseout below
     const highlightFn = (d, setClass) => {
       for (task of d.deps) {
@@ -106,6 +112,7 @@ d3.gantt = function() {
       .append("rect")
         .attr("y", 0)
         .attr("id", d => 'task-' + d.taskId)
+        .attr("fill", d => colorScale(d.header.taskName || ''))
         .on("mouseover", d => {
           g_tooltipDiv.transition()
             .duration(200)
@@ -128,7 +135,7 @@ d3.gantt = function() {
       .merge(rect)
         .attr("rx", (d) => (taskRoundiness[d.status] || 5))
         .attr("ry", (d) => (taskRoundiness[d.status] || 5))
-        .attr("class", (d) => (taskStatus[d.status] || "bar"))
+//        .attr("class", (d) => (taskStatus[d.status] || "bar"))
         .attr("transform", rectTransform)
         .attr("height", () => y.bandwidth())
         .attr("width", (d) => x(d.endDate) - x(d.startDate));
