@@ -74,7 +74,7 @@ g.delay line {
 <body>
     <h3>Gantt Viewer</h3>
 
-    <div id="errorOutput"></div>
+    <div id="errorOutput">Loading...</div>
     <div id="content">
         <div id="input_wrapper">
             <textarea cols="50" rows="50" id="task_input">
@@ -476,7 +476,7 @@ sys5/BizP2 deploy to production depends on sys5/BizP2 approve data usage
 sys5/BizP2 deploy to production depends on sys5/BizP2 implement API
 sys5/BizP2 deploy to production depends on sys5/BizP2 implement UI
             </textarea>
-            <button id="btn_load_tasks">Load Tasks into Chart</button>
+            <button disabled id="btn_load_tasks">Load Tasks into Chart</button>
         </div>
 
         <div id="gantt_wrapper"></div>
@@ -511,6 +511,14 @@ btnLoadTasks.addEventListener('click', (ev) => {
         console.dir(e);
         errorOut.textContent = e.toString();
     }
+});
+
+// Enable the load tasks button and reset "Loading..." text once the full
+// page has loaded
+window.addEventListener('load', ev => {
+    btnLoadTasks.removeAttribute('disabled');
+    let loadingDiv = document.getElementById('errorOutput');
+    loadingDiv.textContent = 'Ready (try clicking Load tasks below...)';
 });
 
 let gantt;
