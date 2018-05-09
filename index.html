@@ -482,6 +482,19 @@ sys5/BizP2 deploy to production depends on sys5/BizP2 implement UI
         <div id="gantt_wrapper"></div>
     </div>
 
+    <!-- Someone actually tried running this in Internet Explorer?? -->
+    <script>
+        var ua = window.navigator.userAgent;
+        var trident = ua.indexOf('Trident/');
+
+        if (trident > 0) {
+            var contentDiv = document.getElementById('content');
+            contentDiv.innerHTML = '<p>This site will not work in Internet Explorer without further work.  ' +
+                'Please try Google Chrome, Microsoft Edge, Safari, or Mozilla Firefox.';
+            throw new Error('Stopping page load here.');
+        }
+    </script>
+
     <script src="https://d3js.org/d3.v5.min.js"></script>
     <script src="gantt.js"></script>
     <script src="toposort.js"></script>
