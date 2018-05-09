@@ -15,6 +15,7 @@ function parseTasks(taskInput) {
     let tasks = [];
     let deps  = [];
     var curHeader;
+    let taskId = 1;
 
     const lines = taskInput.trim()
         .split(/\n+/)
@@ -28,6 +29,7 @@ function parseTasks(taskInput) {
             if (task.status === "HEADER") {
                 // New header
                 curHeader = task;
+                continue;
             }
             else if (task.status === "DEPS") {
                 deps.push(task);
@@ -35,6 +37,7 @@ function parseTasks(taskInput) {
             }
             else if (curHeader) {
                 task.header = curHeader;
+                task.taskId = taskId++;
             }
 
             tasks.push(task);

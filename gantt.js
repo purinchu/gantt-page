@@ -86,12 +86,24 @@ d3.gantt = function() {
   function dataMerge(ganttChartGroup, tasks) {
     var rect = ganttChartGroup.selectAll("rect").data(tasks, keyFunction);
 
+    // Used for task highlighting in mousein/mouseout below
+    const highlightFn = (d, setClass) => {
+      for (task of d.deps) {
+        d3.select('#task-' + task.taskId)
+          .classed('highlight', setClass);
+        if (task.deps.length > 0) {
+          highlightFn(task, setClass);
+        }
+      }
+    };
+
     // See D3's "General Update Pattern"
     rect.exit().remove();
 
     rect.enter()
       .append("rect")
         .attr("y", 0)
+        .attr("id", d => 'task-' + d.taskId)
         .on("mouseover", d => {
           g_tooltipDiv.transition()
             .duration(200)
@@ -101,11 +113,15 @@ d3.gantt = function() {
           g_tooltipDiv.html(makeTooltip(d), d.taskName + "<br/>")
             .style("left", (d3.event.pageX) + "px")
             .style("top",  (d3.event.pageY - 60) + "px");
+
+          // Highlight all task dependencies recursively
+          highlightFn(d, true);
         })
         .on("mouseout", d => {
-            g_tooltipDiv.transition()
-              .duration(500)
-              .style("opacity", 0);
+          highlightFn(d, false);
+          g_tooltipDiv.transition()
+            .duration(500)
+            .style("opacity", 0);
         })
       .merge(rect)
         .attr("rx", (d) => (taskRoundiness[d.status] || 5))
