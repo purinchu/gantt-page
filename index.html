@@ -555,7 +555,7 @@ function setupGanttChart(tasks) {
         gantt = d3.gantt()
             .taskTypes(taskPerformers)
             .taskStatus(taskStatus)
-            .tickFormat("%b (%V)");
+            .tickFormat("%x")
         gantt(tasks);
     }
     else {
