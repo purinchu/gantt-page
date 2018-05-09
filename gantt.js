@@ -77,7 +77,9 @@ d3.gantt = function() {
 
     xAxis = d3.axisBottom().scale(x)
       .tickFormat(d3.timeFormat(tickFormat))
-      .tickSize(8).tickPadding(8);
+      .tickSizeInner(-height)
+      .tickSizeOuter(8)
+      .tickPadding(4);
 
     yAxis = d3.axisLeft().scale(y)
       .tickSize(0);
@@ -170,8 +172,8 @@ d3.gantt = function() {
         .attr("height", height + margin.top + margin.bottom)
         .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
 
-    dataMerge(svg, tasks);
     resetAndCreateAxes();
+    dataMerge(svg, tasks);
 
     return gantt;
 
@@ -199,8 +201,8 @@ d3.gantt = function() {
 
     var svg = d3.select("svg");
 
-    dataMerge(svg.select(".gantt-chart"), tasks);
     resetAndCreateAxes();
+    dataMerge(svg.select(".gantt-chart"), tasks);
 
     return gantt;
   };
